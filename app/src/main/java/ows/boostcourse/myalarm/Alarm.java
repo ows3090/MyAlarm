@@ -1,8 +1,12 @@
 package ows.boostcourse.myalarm;
 
+/**
+ * Alarm Model
+ * 사용자가 알람을 설정할 경우 참조되는 모델
+ */
 public class Alarm {
 
-    private String meridiem;
+    private String meridiem;        // AM or PM
     private  int hourOfday;
     private int minute;
 
