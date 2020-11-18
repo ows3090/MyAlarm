@@ -2,11 +2,13 @@ package ows.boostcourse.myalarm;
 
 /**
  * Alarm Model
- * 사용자가 알람을 설정할 경우 참조되는 모델
+ * meridiem : AM, PM
+ * hourOfDay : 0~24
+ * minute : 0~60
  */
 public class Alarm {
 
-    private String meridiem;        // AM or PM
+    private String meridiem;
     private  int hourOfday;
     private int minute;
 
@@ -24,9 +26,7 @@ public class Alarm {
         this.meridiem = meridiem;
     }
 
-    public int getHourOfday() {
-        return hourOfday;
-    }
+    public int getHourOfday() { return hourOfday; }
 
     public void setHourOfday(int hourOfday) {
         this.hourOfday = hourOfday;

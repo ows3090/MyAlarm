@@ -1,6 +1,8 @@
 package ows.boostcourse.myalarm;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -15,13 +17,16 @@ import android.widget.TimePicker;
 
 import java.util.ArrayList;
 
+/**
+ * This is Alarm App MainActivity
+ */
 public class MainActivity extends AppCompatActivity {
 
-    public MainPresenter presenter;
-    public ListView listView;
-    public TimePicker timePicker;
-    public Button setButton;
-    public MainView mainView = new MainView() {
+    private MainPresenter presenter;
+    private RecyclerView recyclerView;
+    private TimePicker timePicker;
+    private Button setButton;
+    private MainView mainView = new MainView() {
         @Override
         public void onInitView(AlarmAdapter adapter) {
             initView(adapter);
@@ -33,16 +38,21 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        presenter = new MainPresenter(mainView);
+        presenter = new MainPresenter(this,mainView);
         presenter.onCreate();
 
     }
 
+    /**
+     * intialize view
+     * @param adapter : recyclerview adapter
+     */
     public void initView(AlarmAdapter adapter){
         timePicker = findViewById(R.id.activity_main_tp);
         setButton = findViewById(R.id.activity_main_btn);
-        listView = findViewById(R.id.activity_main_lv);
-        listView.setAdapter(adapter);
+        recyclerView = findViewById(R.id.activity_main_rv);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this,RecyclerView.VERTICAL,false));
+        recyclerView.setAdapter(adapter);
 
         setButton.setOnClickListener(new View.OnClickListener() {
             @Override
