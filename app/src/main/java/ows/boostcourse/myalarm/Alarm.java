@@ -1,12 +1,14 @@
 package ows.boostcourse.myalarm;
 
+import androidx.annotation.NonNull;
+
 /**
  * Alarm Model
  * meridiem : AM, PM
  * hourOfDay : 0~24
  * minute : 0~60
  */
-public class Alarm {
+public class Alarm{
 
     private String meridiem;
     private  int hourOfday;
@@ -16,6 +18,10 @@ public class Alarm {
         this.meridiem = meridiem;
         this.hourOfday = hourOfday;
         this.minute = minute;
+    }
+
+    public String toString(){
+        return String.format("%s %d시 %d분",meridiem,hourOfday,minute);
     }
 
     public String getMeridiem() {
@@ -39,4 +45,5 @@ public class Alarm {
     public void setMinute(int minute) {
         this.minute = minute;
     }
+
 }

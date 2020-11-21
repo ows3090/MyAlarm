@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.util.Log;
@@ -14,18 +15,29 @@ import java.util.Calendar;
 
 /**
  * MainPresenter interact mainView (interface)
+ * MainPresenter applied Singleton design pattern.
  */
 public class MainPresenter implements Presenter{
 
+    private static MainPresenter instance;
     private static final String TAG = MainPresenter.class.getSimpleName();
+    private AlarmDatebase alarmDatebase;
     private Context context;
     private MainView view;
     private Calendar calendar;
     private AlarmAdapter adapter = new AlarmAdapter();
 
-    public MainPresenter(Context context, MainView view) {
+    private MainPresenter(Context context, MainView view) {
         this.context = context;
         this.view = view;
+        alarmDatebase = new AlarmDatebase(context);
+    }
+
+    public static MainPresenter getInstance(Context context, MainView view){
+        if(instance == null){
+            instance = new MainPresenter(context,view);
+        }
+        return instance;
     }
 
     @Override
@@ -34,8 +46,11 @@ public class MainPresenter implements Presenter{
         view.onInitView(adapter);
     }
 
+
+
     /**
-     * Get Meridiem "AM" or "PM"
+     * Get Meridiem (AM or PM)
+     *
      * @param hourOfDay
      * @return String meridiem
      */
@@ -47,8 +62,11 @@ public class MainPresenter implements Presenter{
         return meridiem;
     }
 
+
+
     /**
      * Set alarm based on time picker
+     *
      * @param hourOfDay
      * @param minute
      */
