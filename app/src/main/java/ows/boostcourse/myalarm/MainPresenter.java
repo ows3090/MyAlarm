@@ -21,7 +21,6 @@ public class MainPresenter implements Presenter{
     private AlarmDatabase alarmDatabase;
     private Context context;
     private MainView view;
-    private Calendar calendar;
     private AlarmAdapter adapter;
 
 
@@ -60,22 +59,8 @@ public class MainPresenter implements Presenter{
 
     @Override
     public void onCreate() {
-        calendar = Calendar.getInstance();
         view.onInitView(adapter);
-    }
-
-
-    /**
-     * Get Meridiem (AM or PM).
-     * @param hourOfDay
-     * @return meridiem.
-     */
-    public String getMeridiem(int hourOfDay){
-        String meridiem = "AM";
-        if(hourOfDay>12){
-            meridiem = "PM";
-        }
-        return meridiem;
+        notfiyAlarmEvent();
     }
 
 
@@ -86,36 +71,54 @@ public class MainPresenter implements Presenter{
      */
     public void setAlarm(int hourOfDay, int minute){
 
+        Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY,hourOfDay);
         calendar.set(Calendar.MINUTE,minute);
         calendar.set(Calendar.SECOND,0);
 
-        String meridiem = getMeridiem(hourOfDay);
-        if(getMeridiem(hourOfDay) == "PM"){
-            hourOfDay-=12;
-        }
-
-        Alarm alarm = new Alarm(meridiem,hourOfDay, minute);
+        Alarm alarm = new Alarm(calendar);
         if(alarmDatabase.insertDatabase(alarm)){
-            Log.d(TAG,alarm.toString());
+            //Log.d(TAG,alarm.toString());
         }
         adapter.addItem(alarm);
-        alarmNotification(calendar);
+        notfiyAlarmEvent();
     }
 
 
-    public void alarmNotification(Calendar calendar){
+    /**
+     * Notify alarm event in database.
+     */
+    public void notfiyAlarmEvent(){
 
         Intent alarmIntent = new Intent(context, AlarmReceiver.class);
+
+        // getBroadcast : Retrieve a Pendingintent that will perform a broadcast.
+        // The returned object can be handed to other application so that they can perform the action you described on your behalf at a later time.
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context,0,alarmIntent,0);
+
+        // This class provides access to the system alarm services.
+        // These allow you to schedule your application to be run at some point in the future.
         AlarmManager alarmManager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
 
-        if(alarmManager != null){
-            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,calendar.getTimeInMillis(),
-                    AlarmManager.INTERVAL_DAY,pendingIntent);
+        for(int i = 0;i<alarmDatabase.selectDatabase().size();i++){
+            Alarm alarm = alarmDatabase.selectDatabase().get(i);
+            Calendar calendar = alarm.getCalendar();
 
-            if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.M){
-                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP,calendar.getTimeInMillis(),pendingIntent);
+            if(calendar.before(Calendar.getInstance())){
+                alarm.addOneDayCalendar();
+                calendar = alarm.getCalendar();
+            }
+
+            if(alarmManager != null){
+
+                // Scheduling a repeating alarm.
+                alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,calendar.getTimeInMillis(),
+                        AlarmManager.INTERVAL_DAY,pendingIntent);
+
+                // When We want to alarm system is in low-power idle, you should use setExactAndAllowWhileIdle method.
+                if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
+                    alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP,calendar.getTimeInMillis(),pendingIntent);
+                }
             }
         }
 

@@ -32,7 +32,7 @@ public class AlarmDatabase {
     /**
      * Insert setting alarm information in database.
      * @param alarm
-     * @return if insert success, return true else false.
+     * @return if insert success, return true else false
      */
     public boolean insertDatabase(Alarm alarm){
         Gson gson = new Gson();

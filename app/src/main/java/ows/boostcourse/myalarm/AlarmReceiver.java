@@ -10,8 +10,6 @@ public class AlarmReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.d("msg","hihi");
-//        Intent serviceIntent = new Intent(context,MyService.class);
-//        context.startService(serviceIntent);
+        Toast.makeText(context,"알림이 울립니다",Toast.LENGTH_LONG).show();
     }
 }

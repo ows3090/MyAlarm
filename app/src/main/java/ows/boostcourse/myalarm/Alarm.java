@@ -1,6 +1,8 @@
 package ows.boostcourse.myalarm;
 
 
+import java.util.Calendar;
+
 /**
  * Alarm Model
  * meridiem : AM, PM
@@ -9,42 +11,61 @@ package ows.boostcourse.myalarm;
  */
 public class Alarm{
 
+    private Calendar calendar;
     private String meridiem;
     private  int hourOfday;
     private int minute;
 
     /**
      * Alarm constructor.
-     * @param meridiem
-     * @param hourOfday
-     * @param minute
+     * @param calendar
      */
-    public Alarm(String meridiem, int hourOfday, int minute) {
-        this.meridiem = meridiem;
-        this.hourOfday = hourOfday;
-        this.minute = minute;
+    public Alarm(Calendar calendar){
+        this.calendar = calendar;
+        updateInfo();
+    }
+
+
+    /**
+     * Update alarm information except calendar.
+     */
+    private void updateInfo(){
+        this.meridiem = "AM";
+        this.hourOfday = calendar.get(Calendar.HOUR_OF_DAY);
+        this.minute = calendar.get(Calendar.MINUTE);
+
+        if(hourOfday>=12){
+            this.meridiem = "PM";
+            hourOfday-=12;
+        }
+    }
+
+    @Override
+    public String toString() {
+        return meridiem+" "+hourOfday+"시 "+minute+"분";
+    }
+
+    /**
+     * Add One day When calendar has passed the current time.
+     */
+    public void addOneDayCalendar(){
+        calendar.add(Calendar.DATE,1);
+        updateInfo();
+    }
+
+    public Calendar getCalendar() {
+        return calendar;
     }
 
     public String getMeridiem() {
         return meridiem;
     }
 
-    public void setMeridiem(String meridiem) {
-        this.meridiem = meridiem;
-    }
-
-    public int getHourOfday() { return hourOfday; }
-
-    public void setHourOfday(int hourOfday) {
-        this.hourOfday = hourOfday;
+    public int getHourOfday() {
+        return hourOfday;
     }
 
     public int getMinute() {
         return minute;
     }
-
-    public void setMinute(int minute) {
-        this.minute = minute;
-    }
-
 }
