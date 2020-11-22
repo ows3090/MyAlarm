@@ -3,36 +3,54 @@ package ows.boostcourse.myalarm;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.os.Build;
 import android.util.Log;
 
 import java.util.Calendar;
 
 /**
- * MainPresenter interact mainView (interface)
+ * MainPresenter interact mainView (interface).
  * MainPresenter applied Singleton design pattern.
  */
 public class MainPresenter implements Presenter{
 
     private static MainPresenter instance;
     private static final String TAG = MainPresenter.class.getSimpleName();
-    private AlarmDatebase alarmDatebase;
+    private AlarmDatabase alarmDatabase;
     private Context context;
     private MainView view;
     private Calendar calendar;
-    private AlarmAdapter adapter = new AlarmAdapter();
+    private AlarmAdapter adapter;
 
+
+    /**
+     * MainPresenter constructor.
+     * @param context
+     * @param view view that mapped to presenter.
+     */
     private MainPresenter(Context context, MainView view) {
         this.context = context;
         this.view = view;
-        alarmDatebase = new AlarmDatebase(context);
+        alarmDatabase = new AlarmDatabase(context);
+        adapter = new AlarmAdapter();
+
+        /**
+         * Update adapter by shardpreferences that have setting alarm information.
+         */
+        for(int i = 0; i< alarmDatabase.selectDatabase().size(); i++){
+            adapter.addItem(alarmDatabase.selectDatabase().get(i));
+            Log.d(TAG, alarmDatabase.selectDatabase().get(i).toString());
+        }
     }
 
+    /**
+     * Get sigleton instance (MainPresenter).
+     * @param context
+     * @param view view that mapped to presenter.
+     * @return
+     */
     public static MainPresenter getInstance(Context context, MainView view){
         if(instance == null){
             instance = new MainPresenter(context,view);
@@ -47,12 +65,10 @@ public class MainPresenter implements Presenter{
     }
 
 
-
     /**
-     * Get Meridiem (AM or PM)
-     *
+     * Get Meridiem (AM or PM).
      * @param hourOfDay
-     * @return String meridiem
+     * @return meridiem.
      */
     public String getMeridiem(int hourOfDay){
         String meridiem = "AM";
@@ -63,10 +79,8 @@ public class MainPresenter implements Presenter{
     }
 
 
-
     /**
-     * Set alarm based on time picker
-     *
+     * Set alarm based on time picker.
      * @param hourOfDay
      * @param minute
      */
@@ -82,17 +96,16 @@ public class MainPresenter implements Presenter{
         }
 
         Alarm alarm = new Alarm(meridiem,hourOfDay, minute);
-        Log.d(TAG,meridiem+", "+hourOfDay+", "+minute+"분");
+        if(alarmDatabase.insertDatabase(alarm)){
+            Log.d(TAG,alarm.toString());
+        }
         adapter.addItem(alarm);
-
         alarmNotification(calendar);
     }
 
 
     public void alarmNotification(Calendar calendar){
 
-//        PackageManager pm = context.getPackageManager();
-//        ComponentName receiver = new ComponentName(context,AppBootReceiver.class);
         Intent alarmIntent = new Intent(context, AlarmReceiver.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context,0,alarmIntent,0);
         AlarmManager alarmManager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
@@ -106,14 +119,7 @@ public class MainPresenter implements Presenter{
             }
         }
 
-//        pm.setComponentEnabledSetting(receiver,
-//                PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
-//                PackageManager.DONT_KILL_APP);
-
     }
-
-
-
 
 
 

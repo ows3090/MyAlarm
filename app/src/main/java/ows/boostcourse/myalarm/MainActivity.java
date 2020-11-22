@@ -19,7 +19,7 @@ import android.widget.TimePicker;
 import java.util.ArrayList;
 
 /**
- * This is Alarm App MainActivity
+ * This is Alarm App MainActivity.
  */
 public class MainActivity extends AppCompatActivity {
 
@@ -27,6 +27,10 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private TimePicker timePicker;
     private Button setButton;
+
+    /**
+     * MainView interface that mapped to MainPresenter.
+     */
     private MainView mainView = new MainView() {
         @Override
         public void onInitView(AlarmAdapter adapter) {
@@ -34,6 +38,10 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    /**
+     * Called onCreate() method when MainActivity view create.
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,16 +53,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * intialize view
-     * @param adapter : recyclerview adapter
+     * Intialize view.
+     * @param adapter recyclerview adapter.
      */
     public void initView(AlarmAdapter adapter){
         timePicker = findViewById(R.id.activity_main_tp);
         setButton = findViewById(R.id.activity_main_btn);
         recyclerView = findViewById(R.id.activity_main_rv);
+
+        // Setting adatper and layoutManager on recylerview.
         recyclerView.setLayoutManager(new LinearLayoutManager(this,RecyclerView.VERTICAL,false));
         recyclerView.setAdapter(adapter);
 
+        // Setting Click event listener on setButton.
         setButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

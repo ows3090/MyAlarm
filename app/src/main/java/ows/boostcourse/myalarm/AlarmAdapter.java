@@ -12,20 +12,25 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 
 /**
- * RecyclerView Adapter
+ * RecyclerView Adapter.
  */
 public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHolder> {
 
     private ArrayList<Alarm> alramList = new ArrayList<Alarm>();
 
     /**
-     * Provide a reference to the type of views that you are using (custom viewholder)
+     * Provide a reference to the type of views that you are using (custom viewholder).
      */
     public static class AlarmViewHolder extends RecyclerView.ViewHolder{
         private TextView meridiem;
         private TextView hourOfDay;
         private TextView minute;
 
+
+        /**
+         * AlarmViewHolder constructor.
+         * @param itemView itemView to inflate.
+         */
         public AlarmViewHolder(@NonNull View itemView) {
             super(itemView);
 
@@ -49,26 +54,30 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
 
     /**
      * Add item in alarmList
-     * @param alarm : alarm class have meridiem, hourofDay, minute information.
+     * @param alarm alarm class have meridiem, hourofDay, minute information.
      */
     public void addItem(Alarm alarm){
         alramList.add(alarm);
         notifyDataSetChanged();
     }
 
-    // Create new views
+    /**
+     * Create a ViewHolder that fits the view.
+     * @param parent
+     * @param viewType
+     * @return
+     */
     @NonNull
     @Override
     public AlarmViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.activity_main_recyclerview,parent,false);
-
         return new AlarmViewHolder(view);
     }
 
     /**
-     * Replace the content of view
+     * Replace the content of view.
      * @param holder
-     * @param position : your dateset of position
+     * @param position your dateset of position.
      */
     @Override
     public void onBindViewHolder(@NonNull AlarmViewHolder holder, int position) {
@@ -77,6 +86,11 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
         holder.getMinute().setText(String.format("%02d분",alramList.get(position).getMinute()));
     }
 
+
+    /**
+     * Get number of views to be displayed.
+     * @return number of views.
+     */
     @Override
     public int getItemCount() {
         return alramList.size();
