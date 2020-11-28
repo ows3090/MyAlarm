@@ -5,4 +5,5 @@ package ows.boostcourse.myalarm;
  */
 public interface Presenter {
     public void onCreate();
+    public void onDestory();
 }

@@ -53,7 +53,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Intialize view.
+     * Called onDestroy() method when MainAcitivity view destory.
+     */
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        presenter.onDestory();
+    }
+
+    /**
+     * Initialize view.
      * @param adapter recyclerview adapter.
      */
     public void initView(AlarmAdapter adapter){

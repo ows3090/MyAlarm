@@ -32,8 +32,8 @@ public class MainPresenter implements Presenter{
     private MainPresenter(Context context, MainView view) {
         this.context = context;
         this.view = view;
-        alarmDatabase = new AlarmDatabase(context);
-        adapter = new AlarmAdapter();
+        alarmDatabase = AlarmDatabase.getInstance(context);
+        adapter = new AlarmAdapter(context);
 
         /**
          * Update adapter by shardpreferences that have setting alarm information.
@@ -57,12 +57,22 @@ public class MainPresenter implements Presenter{
         return instance;
     }
 
+    /**
+     * Called onCreate when MainPresenter create.
+     */
     @Override
     public void onCreate() {
         view.onInitView(adapter);
-        notfiyAlarmEvent();
+        notifyAlarmEvent();
     }
 
+    /**
+     * Called onDestory when MainPresenter destory.
+     */
+    @Override
+    public void onDestory() {
+        instance = null;
+    }
 
     /**
      * Set alarm based on time picker.
@@ -70,47 +80,45 @@ public class MainPresenter implements Presenter{
      * @param minute
      */
     public void setAlarm(int hourOfDay, int minute){
-
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY,hourOfDay);
         calendar.set(Calendar.MINUTE,minute);
         calendar.set(Calendar.SECOND,0);
 
-        Alarm alarm = new Alarm(calendar);
-        if(alarmDatabase.insertDatabase(alarm)){
-            //Log.d(TAG,alarm.toString());
-        }
+        Alarm alarm = new Alarm(calendar,true);
+//        if(alarmDatabase.insertDatabase(alarm)){
+//            Log.d(TAG, alarm.toString() +" insert Database");
+//        }
         adapter.addItem(alarm);
-        notfiyAlarmEvent();
+        notifyAlarmEvent();
     }
-
 
     /**
      * Notify alarm event in database.
      */
-    public void notfiyAlarmEvent(){
+    public void notifyAlarmEvent(){
 
+        // An intent is abstract description of an operation to be performed.
         Intent alarmIntent = new Intent(context, AlarmReceiver.class);
-
-        // getBroadcast : Retrieve a Pendingintent that will perform a broadcast.
-        // The returned object can be handed to other application so that they can perform the action you described on your behalf at a later time.
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context,0,alarmIntent,0);
 
         // This class provides access to the system alarm services.
         // These allow you to schedule your application to be run at some point in the future.
-        AlarmManager alarmManager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
+        final AlarmManager alarmManager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
 
         for(int i = 0;i<alarmDatabase.selectDatabase().size();i++){
+
+            // getBroadcast : Retrieve a pendingintent that will perform a broadcast.
+            // The returned object can be handed to other application so that they can perform the action you described on your behalf at a later time.
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(context,i,alarmIntent,0);
+
             Alarm alarm = alarmDatabase.selectDatabase().get(i);
             Calendar calendar = alarm.getCalendar();
-
             if(calendar.before(Calendar.getInstance())){
                 alarm.addOneDayCalendar();
                 calendar = alarm.getCalendar();
             }
 
             if(alarmManager != null){
-
                 // Scheduling a repeating alarm.
                 alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,calendar.getTimeInMillis(),
                         AlarmManager.INTERVAL_DAY,pendingIntent);
@@ -121,9 +129,6 @@ public class MainPresenter implements Presenter{
                 }
             }
         }
-
     }
-
-
 
 }

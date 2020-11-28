@@ -1,9 +1,12 @@
 package ows.boostcourse.myalarm;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -17,15 +20,20 @@ import java.util.ArrayList;
 public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHolder> {
 
     private ArrayList<Alarm> alramList = new ArrayList<Alarm>();
+    private Context context;
+
+    public AlarmAdapter(Context context) {
+        this.context = context;
+    }
 
     /**
      * Provide a reference to the type of views that you are using (custom viewholder).
      */
-    public static class AlarmViewHolder extends RecyclerView.ViewHolder{
+    public class AlarmViewHolder extends RecyclerView.ViewHolder{
         private TextView meridiem;
         private TextView hourOfDay;
         private TextView minute;
-
+        private Switch flag;
 
         /**
          * AlarmViewHolder constructor.
@@ -33,10 +41,22 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
          */
         public AlarmViewHolder(@NonNull View itemView) {
             super(itemView);
-
             meridiem = itemView.findViewById(R.id.activity_main_lv_meridiem);
             hourOfDay = itemView.findViewById(R.id.activity_main_lv_hour);
             minute = itemView.findViewById(R.id.activity_main_lv_minute);
+            flag = itemView.findViewById(R.id.activity_main_lv_switch);
+            flag.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    int position = getAdapterPosition();
+                    Alarm alarm = alramList.get(position);
+                    alarm.setFlag(isChecked);
+
+                    if(AlarmDatabase.getInstance(context).insertDatabase(alarm)){
+                        Log.d("msg",AlarmDatabase.getInstance(context).selectDatabase().size()+"");
+                    }
+                }
+            });
         }
 
         public TextView getMeridiem() {
@@ -50,6 +70,8 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
         public TextView getMinute() {
             return minute;
         }
+
+        public Switch getFlag() { return flag; }
     }
 
     /**
@@ -84,8 +106,8 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
         holder.getMeridiem().setText(alramList.get(position).getMeridiem());
         holder.getHourOfDay().setText(String.format("%02d시",alramList.get(position).getHourOfday()));
         holder.getMinute().setText(String.format("%02d분",alramList.get(position).getMinute()));
+        holder.getFlag().setChecked(alramList.get(position).getFlag());
     }
-
 
     /**
      * Get number of views to be displayed.

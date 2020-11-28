@@ -15,13 +15,15 @@ public class Alarm{
     private String meridiem;
     private  int hourOfday;
     private int minute;
+    private boolean flag;
 
     /**
      * Alarm constructor.
      * @param calendar
      */
-    public Alarm(Calendar calendar){
+    public Alarm(Calendar calendar, boolean flag){
         this.calendar = calendar;
+        this.flag = flag;
         updateInfo();
     }
 
@@ -40,6 +42,10 @@ public class Alarm{
         }
     }
 
+    /**
+     * Convert Alarm component to String
+     * @return
+     */
     @Override
     public String toString() {
         return meridiem+" "+hourOfday+"시 "+minute+"분";
@@ -67,5 +73,11 @@ public class Alarm{
 
     public int getMinute() {
         return minute;
+    }
+
+    public boolean getFlag() { return flag; }
+
+    public void setFlag(boolean flag) {
+        this.flag = flag;
     }
 }

@@ -11,10 +11,11 @@ import java.util.Map;
 
 /**
  * AlaramDatabae is database that have setting alarm information.
- * This is used SharedPreference.
+ * This is used SharedPreference and applied Singleton design pattern.
  */
 public class AlarmDatabase {
 
+    private static AlarmDatabase instance;
     private static final String TAG = AlarmDatabase.class.getSimpleName();
     private static final String FILE_NAME = "AlarmDB";
     private SharedPreferences preferences;
@@ -24,9 +25,21 @@ public class AlarmDatabase {
      * AlarmDatabase constructor
      * @param context
      */
-    public AlarmDatabase(Context context){
+    private AlarmDatabase(Context context){
         preferences = context.getSharedPreferences(FILE_NAME,Context.MODE_PRIVATE);
         editor = preferences.edit();
+    }
+
+    /**
+     * Get sigleton instance (AlarmDatabase)
+     * @param context
+     * @return
+     */
+    public static AlarmDatabase getInstance(Context context){
+        if(instance == null){
+            instance = new AlarmDatabase(context);
+        }
+        return instance;
     }
 
     /**
