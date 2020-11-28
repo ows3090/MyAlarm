@@ -1,4 +1,4 @@
-package ows.boostcourse.myalarm;
+package ows.boostcourse.myalarm.Interface;
 
 /**
  * MVP architecture에서의 Presenter Interface

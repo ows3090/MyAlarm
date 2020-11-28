@@ -1,4 +1,4 @@
-package ows.boostcourse.myalarm;
+package ows.boostcourse.myalarm.Component;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

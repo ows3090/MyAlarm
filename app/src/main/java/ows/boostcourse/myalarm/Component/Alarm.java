@@ -1,4 +1,4 @@
-package ows.boostcourse.myalarm;
+package ows.boostcourse.myalarm.Component;
 
 
 import java.util.Calendar;
@@ -59,9 +59,7 @@ public class Alarm{
         updateInfo();
     }
 
-    public Calendar getCalendar() {
-        return calendar;
-    }
+    public Calendar getCalendar() { return calendar; }
 
     public String getMeridiem() {
         return meridiem;
@@ -77,7 +75,5 @@ public class Alarm{
 
     public boolean getFlag() { return flag; }
 
-    public void setFlag(boolean flag) {
-        this.flag = flag;
-    }
+    public void setFlag(boolean flag) { this.flag = flag; }
 }

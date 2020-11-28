@@ -1,4 +1,6 @@
-package ows.boostcourse.myalarm;
+package ows.boostcourse.myalarm.Interface;
+
+import ows.boostcourse.myalarm.Component.AlarmAdapter;
 
 /**
  * MVP architecture에서 MainView를 사용하기 위한 Interface

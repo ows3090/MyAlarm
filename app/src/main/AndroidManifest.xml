@@ -13,7 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".MainActivity">
+        <activity android:name=".Component.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -21,7 +21,7 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name=".AlarmReceiver">
+        <receiver android:name=".Component.AlarmReceiver">
         </receiver>
     </application>
 

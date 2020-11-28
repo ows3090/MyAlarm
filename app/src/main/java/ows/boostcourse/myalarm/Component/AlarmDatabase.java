@@ -1,8 +1,7 @@
-package ows.boostcourse.myalarm;
+package ows.boostcourse.myalarm.Component;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 
 import com.google.gson.Gson;
 
@@ -16,13 +15,12 @@ import java.util.Map;
 public class AlarmDatabase {
 
     private static AlarmDatabase instance;
-    private static final String TAG = AlarmDatabase.class.getSimpleName();
     private static final String FILE_NAME = "AlarmDB";
     private SharedPreferences preferences;
     private SharedPreferences.Editor editor;
 
     /**
-     * AlarmDatabase constructor
+     * AlarmDatabase constructor.
      * @param context
      */
     private AlarmDatabase(Context context){
@@ -31,7 +29,7 @@ public class AlarmDatabase {
     }
 
     /**
-     * Get sigleton instance (AlarmDatabase)
+     * Get sigleton instance (AlarmDatabase).
      * @param context
      * @return
      */
@@ -45,12 +43,23 @@ public class AlarmDatabase {
     /**
      * Insert setting alarm information in database.
      * @param alarm
-     * @return if insert success, return true else false
+     * @return if insert success, return true else false.
      */
     public boolean insertDatabase(Alarm alarm){
         Gson gson = new Gson();
         String json = gson.toJson(alarm,Alarm.class);
-        Log.d(TAG, json);
+        editor.putString(alarm.toString(),json);
+        return editor.commit();
+    }
+
+    /**
+     * Update object of the same alarm information in database.
+     * @param alarm Object to be updated.
+     * @return
+     */
+    public boolean updateDatabase(Alarm alarm){
+        Gson gson = new Gson();
+        String json = gson.toJson(alarm,Alarm.class);
         editor.putString(alarm.toString(),json);
         return editor.commit();
     }

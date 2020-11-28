@@ -1,22 +1,16 @@
-package ows.boostcourse.myalarm;
+package ows.boostcourse.myalarm.Component;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.Button;
-import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.TimePicker;
 
-import java.util.ArrayList;
+import ows.boostcourse.myalarm.Interface.MainView;
+import ows.boostcourse.myalarm.R;
 
 /**
  * This is Alarm App MainActivity.
@@ -49,7 +43,6 @@ public class MainActivity extends AppCompatActivity {
 
         presenter = MainPresenter.getInstance(getApplicationContext(),mainView);
         presenter.onCreate();
-
     }
 
     /**

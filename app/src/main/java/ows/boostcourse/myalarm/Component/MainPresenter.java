@@ -1,4 +1,4 @@
-package ows.boostcourse.myalarm;
+package ows.boostcourse.myalarm.Component;
 
 
 import android.app.AlarmManager;
@@ -10,11 +10,14 @@ import android.util.Log;
 
 import java.util.Calendar;
 
+import ows.boostcourse.myalarm.Interface.MainView;
+import ows.boostcourse.myalarm.Interface.Presenter;
+
 /**
  * MainPresenter interact mainView (interface).
  * MainPresenter applied Singleton design pattern.
  */
-public class MainPresenter implements Presenter{
+public class MainPresenter implements Presenter {
 
     private static MainPresenter instance;
     private static final String TAG = MainPresenter.class.getSimpleName();
@@ -22,7 +25,6 @@ public class MainPresenter implements Presenter{
     private Context context;
     private MainView view;
     private AlarmAdapter adapter;
-
 
     /**
      * MainPresenter constructor.
@@ -86,9 +88,9 @@ public class MainPresenter implements Presenter{
         calendar.set(Calendar.SECOND,0);
 
         Alarm alarm = new Alarm(calendar,true);
-//        if(alarmDatabase.insertDatabase(alarm)){
-//            Log.d(TAG, alarm.toString() +" insert Database");
-//        }
+        if(alarmDatabase.insertDatabase(alarm)){
+            Log.d(TAG, alarm.toString() +" insert alarm in Database");
+        }
         adapter.addItem(alarm);
         notifyAlarmEvent();
     }

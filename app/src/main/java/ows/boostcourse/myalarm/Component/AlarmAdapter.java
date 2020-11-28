@@ -1,4 +1,4 @@
-package ows.boostcourse.myalarm;
+package ows.boostcourse.myalarm.Component;
 
 import android.content.Context;
 import android.util.Log;
@@ -13,6 +13,10 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+
+import ows.boostcourse.myalarm.R;
 
 /**
  * RecyclerView Adapter.
@@ -21,10 +25,7 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
 
     private ArrayList<Alarm> alramList = new ArrayList<Alarm>();
     private Context context;
-
-    public AlarmAdapter(Context context) {
-        this.context = context;
-    }
+    private static final String TAG = AlarmAdapter.class.getSimpleName();
 
     /**
      * Provide a reference to the type of views that you are using (custom viewholder).
@@ -45,6 +46,8 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
             hourOfDay = itemView.findViewById(R.id.activity_main_lv_hour);
             minute = itemView.findViewById(R.id.activity_main_lv_minute);
             flag = itemView.findViewById(R.id.activity_main_lv_switch);
+
+            // Event is called when switch changed.
             flag.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -52,8 +55,8 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
                     Alarm alarm = alramList.get(position);
                     alarm.setFlag(isChecked);
 
-                    if(AlarmDatabase.getInstance(context).insertDatabase(alarm)){
-                        Log.d("msg",AlarmDatabase.getInstance(context).selectDatabase().size()+"");
+                    if(AlarmDatabase.getInstance(context).updateDatabase(alarm)){
+                        Log.d(TAG,alarm.toString()+" update alarm in database");
                     }
                 }
             });
@@ -74,14 +77,36 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
         public Switch getFlag() { return flag; }
     }
 
+
+    /**
+     * AlarmAdatper constructor.
+     * @param context
+     */
+    public AlarmAdapter(Context context) {
+        this.context = context;
+    }
+
     /**
      * Add item in alarmList
+     * AlarmList is sorted in ascending order.
      * @param alarm alarm class have meridiem, hourofDay, minute information.
      */
     public void addItem(Alarm alarm){
         alramList.add(alarm);
+
+        // Ascending comparator implemented as anonymous class
+        Comparator<Alarm> comparator = new Comparator<Alarm>() {
+            @Override
+            public int compare(Alarm o1, Alarm o2) {
+                return o1.toString().compareTo(o2.toString());
+            }
+        };
+
+        Collections.sort(alramList,comparator);
         notifyDataSetChanged();
     }
+
+
 
     /**
      * Create a ViewHolder that fits the view.
