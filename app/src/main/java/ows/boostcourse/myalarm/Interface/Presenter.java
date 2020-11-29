@@ -1,7 +1,7 @@
 package ows.boostcourse.myalarm.Interface;
 
 /**
- * MVP architecture에서의 Presenter Interface
+ * Interface for using Presenter in MVP architecture.
  */
 public interface Presenter {
     public void onCreate();

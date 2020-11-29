@@ -12,6 +12,7 @@ import java.util.Calendar;
 
 import ows.boostcourse.myalarm.Interface.MainView;
 import ows.boostcourse.myalarm.Interface.Presenter;
+import ows.boostcourse.myalarm.Interface.SwitchListener;
 
 /**
  * MainPresenter interact mainView (interface).
@@ -26,6 +27,29 @@ public class MainPresenter implements Presenter {
     private MainView view;
     private AlarmAdapter adapter;
 
+    // Switch listener interface is called when switch change
+    private SwitchListener switchListener = new SwitchListener() {
+
+        /**
+         * Update alarm information when switch changed.
+         * @param isChecked switch status
+         * @param position  item current position
+         */
+        @Override
+        public void onDetectChangeSwitch(boolean isChecked, int position) {
+            Alarm alarm = alarmDatabase.selectDatabase().get(position);
+            alarm.setFlag(isChecked);
+            alarmDatabase.updateDatabase(alarm,position);
+
+            if(isChecked){
+                turnOnAlarmEvent(alarm,position);
+            }
+            else{
+                turnOffAlarmEvent(position);
+            }
+        }
+    };
+
     /**
      * MainPresenter constructor.
      * @param context
@@ -35,7 +59,7 @@ public class MainPresenter implements Presenter {
         this.context = context;
         this.view = view;
         alarmDatabase = AlarmDatabase.getInstance(context);
-        adapter = new AlarmAdapter(context);
+        adapter = new AlarmAdapter(switchListener);
 
         /**
          * Update adapter by shardpreferences that have setting alarm information.
@@ -91,8 +115,59 @@ public class MainPresenter implements Presenter {
         if(alarmDatabase.insertDatabase(alarm)){
             Log.d(TAG, alarm.toString() +" insert alarm in Database");
         }
+
+        // Update adapter
         adapter.addItem(alarm);
-        notifyAlarmEvent();
+
+        // Add new alarm event.
+        turnOnAlarmEvent(alarm, alarmDatabase.size());
+    }
+
+    /**
+     * Turn on new alarm Event or Change new alarm Event.
+     * @param alarm
+     * @param position
+     */
+    public void turnOnAlarmEvent(Alarm alarm, int position){
+
+        // An intent is abstract description of an operation to be performed.
+        Intent alarmIntent = new Intent(context, AlarmReceiver.class);
+
+        // This class provides access to the system alarm services.
+        // These allow you to schedule your application to be run at some point in the future.
+        AlarmManager alarmManager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
+
+        // getBroadcast : Retrieve a pendingintent that will perform a broadcast.
+        // The returned object can be handed to other application so that they can perform the action you described on your behalf at a later time.
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context,position,alarmIntent,0);
+
+        Calendar calendar = alarm.getCalendar();
+        if (calendar.before(Calendar.getInstance())) {
+            alarm.addOneDayCalendar();
+            calendar = alarm.getCalendar();
+        }
+
+        if (alarmManager != null) {
+            // Scheduling a repeating alarm.
+            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
+                    AlarmManager.INTERVAL_DAY, pendingIntent);
+
+            // When We want to alarm system is in low-power idle, you should use setExactAndAllowWhileIdle method.
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+            }
+        }
+    }
+
+    /**
+     * Turn off new alarm Event
+     * @param position
+     */
+    public void turnOffAlarmEvent(int position){
+        Intent intent = new Intent(context, AlarmReceiver.class);
+        AlarmManager alarmManager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context,position,intent,0);
+        alarmManager.cancel(pendingIntent);
     }
 
     /**
@@ -105,7 +180,7 @@ public class MainPresenter implements Presenter {
 
         // This class provides access to the system alarm services.
         // These allow you to schedule your application to be run at some point in the future.
-        final AlarmManager alarmManager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
+        AlarmManager alarmManager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
 
         for(int i = 0;i<alarmDatabase.selectDatabase().size();i++){
 
@@ -114,23 +189,29 @@ public class MainPresenter implements Presenter {
             PendingIntent pendingIntent = PendingIntent.getBroadcast(context,i,alarmIntent,0);
 
             Alarm alarm = alarmDatabase.selectDatabase().get(i);
-            Calendar calendar = alarm.getCalendar();
-            if(calendar.before(Calendar.getInstance())){
-                alarm.addOneDayCalendar();
-                calendar = alarm.getCalendar();
-            }
 
-            if(alarmManager != null){
-                // Scheduling a repeating alarm.
-                alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,calendar.getTimeInMillis(),
-                        AlarmManager.INTERVAL_DAY,pendingIntent);
+            // Register an alarm event when switch on
+            if(alarm.getFlag()) {
+                Calendar calendar = alarm.getCalendar();
+                if (calendar.before(Calendar.getInstance())) {
+                    alarm.addOneDayCalendar();
+                    calendar = alarm.getCalendar();
+                }
 
-                // When We want to alarm system is in low-power idle, you should use setExactAndAllowWhileIdle method.
-                if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
-                    alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP,calendar.getTimeInMillis(),pendingIntent);
+                if (alarmManager != null) {
+                    // Scheduling a repeating alarm.
+                    alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
+                            AlarmManager.INTERVAL_DAY, pendingIntent);
+
+                    // When We want to alarm system is in low-power idle, you should use setExactAndAllowWhileIdle method.
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+                    }
                 }
             }
         }
     }
+
+
 
 }

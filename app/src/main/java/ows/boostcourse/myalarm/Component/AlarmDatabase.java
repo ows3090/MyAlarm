@@ -14,6 +14,7 @@ import java.util.Map;
  */
 public class AlarmDatabase {
 
+    private static ArrayList<Alarm> list = new ArrayList<Alarm>();
     private static AlarmDatabase instance;
     private static final String FILE_NAME = "AlarmDB";
     private SharedPreferences preferences;
@@ -41,6 +42,23 @@ public class AlarmDatabase {
     }
 
     /**
+     * Get setting alarm count.
+     * @return  alarm count.
+     */
+    public int size(){
+        return list.size();
+    }
+
+    /**
+     * Get alarm object of the position.
+     * @param position
+     * @return
+     */
+    public Alarm get(int position){
+        return list.get(position);
+    }
+
+    /**
      * Insert setting alarm information in database.
      * @param alarm
      * @return if insert success, return true else false.
@@ -49,6 +67,8 @@ public class AlarmDatabase {
         Gson gson = new Gson();
         String json = gson.toJson(alarm,Alarm.class);
         editor.putString(alarm.toString(),json);
+
+        list.add(gson.fromJson(json,Alarm.class));
         return editor.commit();
     }
 
@@ -57,10 +77,12 @@ public class AlarmDatabase {
      * @param alarm Object to be updated.
      * @return
      */
-    public boolean updateDatabase(Alarm alarm){
+    public boolean updateDatabase(Alarm alarm,int position){
         Gson gson = new Gson();
         String json = gson.toJson(alarm,Alarm.class);
         editor.putString(alarm.toString(),json);
+
+        list.set(position,alarm);
         return editor.commit();
     }
 
@@ -69,13 +91,6 @@ public class AlarmDatabase {
      * @return alarm arrayList.
      */
     public ArrayList<Alarm> selectDatabase(){
-        ArrayList<Alarm> list = new ArrayList<Alarm>();
-        Map<String,String> map = (Map<String, String>) preferences.getAll();
-
-        Gson gson = new Gson();
-        for(Map.Entry<String,String> entry : map.entrySet()){
-            list.add(gson.fromJson(entry.getValue(),Alarm.class));
-        }
         return list;
     }
 

@@ -1,7 +1,5 @@
 package ows.boostcourse.myalarm.Component;
 
-import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
+import ows.boostcourse.myalarm.Interface.SwitchListener;
 import ows.boostcourse.myalarm.R;
 
 /**
@@ -23,9 +22,9 @@ import ows.boostcourse.myalarm.R;
  */
 public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHolder> {
 
-    private ArrayList<Alarm> alramList = new ArrayList<Alarm>();
-    private Context context;
+    private ArrayList<Alarm> alarmList = new ArrayList<Alarm>();
     private static final String TAG = AlarmAdapter.class.getSimpleName();
+    private SwitchListener switchListener;
 
     /**
      * Provide a reference to the type of views that you are using (custom viewholder).
@@ -52,12 +51,13 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     int position = getAdapterPosition();
-                    Alarm alarm = alramList.get(position);
-                    alarm.setFlag(isChecked);
 
-                    if(AlarmDatabase.getInstance(context).updateDatabase(alarm)){
-                        Log.d(TAG,alarm.toString()+" update alarm in database");
-                    }
+                    // AlarmAdapter's alarmList update
+                    Alarm alarm = alarmList.get(position);
+                    alarm.setFlag(isChecked);
+                    alarmList.set(position,alarm);
+
+                    switchListener.onDetectChangeSwitch(isChecked,position);
                 }
             });
         }
@@ -77,13 +77,12 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
         public Switch getFlag() { return flag; }
     }
 
-
     /**
      * AlarmAdatper constructor.
-     * @param context
+     * @param switchListener
      */
-    public AlarmAdapter(Context context) {
-        this.context = context;
+    public AlarmAdapter(SwitchListener switchListener) {
+        this.switchListener = switchListener;
     }
 
     /**
@@ -92,7 +91,7 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
      * @param alarm alarm class have meridiem, hourofDay, minute information.
      */
     public void addItem(Alarm alarm){
-        alramList.add(alarm);
+        alarmList.add(alarm);
 
         // Ascending comparator implemented as anonymous class
         Comparator<Alarm> comparator = new Comparator<Alarm>() {
@@ -102,11 +101,9 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
             }
         };
 
-        Collections.sort(alramList,comparator);
+        Collections.sort(alarmList,comparator);
         notifyDataSetChanged();
     }
-
-
 
     /**
      * Create a ViewHolder that fits the view.
@@ -128,10 +125,10 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
      */
     @Override
     public void onBindViewHolder(@NonNull AlarmViewHolder holder, int position) {
-        holder.getMeridiem().setText(alramList.get(position).getMeridiem());
-        holder.getHourOfDay().setText(String.format("%02d시",alramList.get(position).getHourOfday()));
-        holder.getMinute().setText(String.format("%02d분",alramList.get(position).getMinute()));
-        holder.getFlag().setChecked(alramList.get(position).getFlag());
+        holder.getMeridiem().setText(alarmList.get(position).getMeridiem());
+        holder.getHourOfDay().setText(String.format("%02d시", alarmList.get(position).getHourOfday()));
+        holder.getMinute().setText(String.format("%02d분", alarmList.get(position).getMinute()));
+        holder.getFlag().setChecked(alarmList.get(position).getFlag());
     }
 
     /**
@@ -140,7 +137,7 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmViewHol
      */
     @Override
     public int getItemCount() {
-        return alramList.size();
+        return alarmList.size();
     }
 
 }
