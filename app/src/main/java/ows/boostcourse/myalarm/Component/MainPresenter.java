@@ -115,12 +115,8 @@ public class MainPresenter implements Presenter {
         if(alarmDatabase.insertDatabase(alarm)){
             Log.d(TAG, alarm.toString() +" insert alarm in Database");
         }
-
         // Update adapter
         adapter.addItem(alarm);
-
-        // Add new alarm event.
-        turnOnAlarmEvent(alarm, alarmDatabase.size());
     }
 
     /**
