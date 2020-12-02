@@ -17,7 +17,11 @@ public class AlarmDatabase {
     private static ArrayList<Alarm> list = new ArrayList<Alarm>();
     private static AlarmDatabase instance;
     private static final String FILE_NAME = "AlarmDB";
+
+    // Interface for accessing and modifying preference data returned by Context#getSharedPreferences.
     private SharedPreferences preferences;
+
+    // Interface used for modifying values in SharedPreferences object.
     private SharedPreferences.Editor editor;
 
     /**
@@ -27,6 +31,13 @@ public class AlarmDatabase {
     private AlarmDatabase(Context context){
         preferences = context.getSharedPreferences(FILE_NAME,Context.MODE_PRIVATE);
         editor = preferences.edit();
+
+        Gson gson = new Gson();
+        Map<String,String> map = (Map<String,String>)preferences.getAll();
+
+        for(Map.Entry<String,String> entry : map.entrySet()){
+            list.add(gson.fromJson(entry.getValue(),Alarm.class));
+        }
     }
 
     /**
@@ -34,7 +45,7 @@ public class AlarmDatabase {
      * @param context
      * @return
      */
-    public static AlarmDatabase getInstance(Context context){
+    public static synchronized AlarmDatabase getInstance(Context context){
         if(instance == null){
             instance = new AlarmDatabase(context);
         }
@@ -64,6 +75,8 @@ public class AlarmDatabase {
      * @return if insert success, return true else false.
      */
     public boolean insertDatabase(Alarm alarm){
+
+        // Gson is typically used by first constructing a Gson instance and then invoking toJson(Object) or fromJson(String,Class) methods on it.
         Gson gson = new Gson();
         String json = gson.toJson(alarm,Alarm.class);
         editor.putString(alarm.toString(),json);

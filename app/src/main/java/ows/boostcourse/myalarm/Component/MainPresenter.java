@@ -64,9 +64,9 @@ public class MainPresenter implements Presenter {
         /**
          * Update adapter by shardpreferences that have setting alarm information.
          */
-        for(int i = 0; i< alarmDatabase.selectDatabase().size(); i++){
-            adapter.addItem(alarmDatabase.selectDatabase().get(i));
-            Log.d(TAG, alarmDatabase.selectDatabase().get(i).toString());
+        for(int i = 0; i< alarmDatabase.size(); i++){
+            adapter.addItem(alarmDatabase.get(i));
+            Log.d(TAG, alarmDatabase.get(i).toString());
         }
     }
 
@@ -76,7 +76,7 @@ public class MainPresenter implements Presenter {
      * @param view view that mapped to presenter.
      * @return
      */
-    public static MainPresenter getInstance(Context context, MainView view){
+    public static synchronized MainPresenter getInstance(Context context, MainView view){
         if(instance == null){
             instance = new MainPresenter(context,view);
         }
@@ -115,6 +115,7 @@ public class MainPresenter implements Presenter {
         if(alarmDatabase.insertDatabase(alarm)){
             Log.d(TAG, alarm.toString() +" insert alarm in Database");
         }
+
         // Update adapter
         adapter.addItem(alarm);
     }
