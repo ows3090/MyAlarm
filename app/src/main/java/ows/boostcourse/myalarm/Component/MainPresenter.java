@@ -118,6 +118,7 @@ public class MainPresenter implements Presenter {
 
         // Update adapter
         adapter.addItem(alarm);
+        turnOnAlarmEvent(alarm,alarmDatabase.size()-1);
     }
 
     /**

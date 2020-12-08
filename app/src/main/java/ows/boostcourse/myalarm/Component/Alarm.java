@@ -48,7 +48,7 @@ public class Alarm{
      */
     @Override
     public String toString() {
-        return meridiem+" "+hourOfday+"시 "+minute+"분";
+        return String.format("%s %02d시 %02d분",meridiem,hourOfday,minute);
     }
 
     /**
