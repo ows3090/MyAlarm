@@ -2,11 +2,19 @@ package ows.boostcourse.myalarm.Component;
 
 
 import android.app.AlarmManager;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.util.Log;
+
+import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
 
 import java.util.Calendar;
 
@@ -118,7 +126,7 @@ public class MainPresenter implements Presenter {
 
         // Update adapter
         adapter.addItem(alarm);
-        turnOnAlarmEvent(alarm,alarmDatabase.size()-1);
+        //turnOnAlarmEvent(alarm,alarmDatabase.size()-1);
     }
 
     /**
@@ -128,33 +136,36 @@ public class MainPresenter implements Presenter {
      */
     public void turnOnAlarmEvent(Alarm alarm, int position){
 
-        // An intent is abstract description of an operation to be performed.
-        Intent alarmIntent = new Intent(context, AlarmReceiver.class);
+        Intent intent = new Intent(context,AlarmService.class);
+        ContextCompat.startForegroundService(context,intent);
 
-        // This class provides access to the system alarm services.
-        // These allow you to schedule your application to be run at some point in the future.
-        AlarmManager alarmManager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
-
-        // getBroadcast : Retrieve a pendingintent that will perform a broadcast.
-        // The returned object can be handed to other application so that they can perform the action you described on your behalf at a later time.
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context,position,alarmIntent,0);
-
-        Calendar calendar = alarm.getCalendar();
-        if (calendar.before(Calendar.getInstance())) {
-            alarm.addOneDayCalendar();
-            calendar = alarm.getCalendar();
-        }
-
-        if (alarmManager != null) {
-            // Scheduling a repeating alarm.
-            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
-                    AlarmManager.INTERVAL_DAY, pendingIntent);
-
-            // When We want to alarm system is in low-power idle, you should use setExactAndAllowWhileIdle method.
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
-            }
-        }
+//        // An intent is abstract description of an operation to be performed.
+//        Intent alarmIntent = new Intent(context, AlarmReceiver.class);
+//
+//        // This class provides access to the system alarm services.
+//        // These allow you to schedule your application to be run at some point in the future.
+//        AlarmManager alarmManager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
+//
+//        // getBroadcast : Retrieve a pendingintent that will perform a broadcast.
+//        // The returned object can be handed to other application so that they can perform the action you described on your behalf at a later time.
+//        PendingIntent pendingIntent = PendingIntent.getBroadcast(context,position,alarmIntent,0);
+//
+//        Calendar calendar = alarm.getCalendar();
+//        if (calendar.before(Calendar.getInstance())) {
+//            alarm.addOneDayCalendar();
+//            calendar = alarm.getCalendar();
+//        }
+//
+//        if (alarmManager != null) {
+//            // Scheduling a repeating alarm.
+//            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
+//                    AlarmManager.INTERVAL_DAY, pendingIntent);
+//
+//            // When We want to alarm system is in low-power idle, you should use setExactAndAllowWhileIdle method.
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+//            }
+//        }
     }
 
     /**

@@ -18,9 +18,9 @@ import ows.boostcourse.myalarm.R;
 public class AlarmReceiver extends BroadcastReceiver {
 
     private static final String TAG = AlarmReceiver.class.getSimpleName();
-    private static final String CHANNEL_ID = "Alarm_ID";
     private static final String NOTIFICATION_TITLE = "Alarm App";
     private static final String NOTIFICATION_TEXT = "This is alarm app";
+    private static final String CHANNEL_ID = "Alarm_ID";
     private static final CharSequence CHANNEL_NAME = "Alarm_Name";
     private static final String CHANNEL_DESCRIPTION = "This is alarm channel";
     private static final int NOTIFICATION_ID = 1;

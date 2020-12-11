@@ -42,8 +42,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Log.d("msg","hi");
-
         presenter = MainPresenter.getInstance(getApplicationContext(),mainView);
         presenter.onCreate();
     }
@@ -53,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
      */
     @Override
     protected void onDestroy() {
+        Log.d("Main","onDestory");
         super.onDestroy();
         presenter.onDestory();
     }
