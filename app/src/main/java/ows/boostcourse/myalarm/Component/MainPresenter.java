@@ -27,9 +27,10 @@ import ows.boostcourse.myalarm.Interface.SwitchListener;
  * MainPresenter applied Singleton design pattern.
  */
 public class MainPresenter implements Presenter {
-
-    private static MainPresenter instance;
+    private static final String POSITION = "position";
+    private static final String FLAG = "flag";
     private static final String TAG = MainPresenter.class.getSimpleName();
+    private static MainPresenter instance;
     private AlarmDatabase alarmDatabase;
     private Context context;
     private MainView view;
@@ -57,6 +58,7 @@ public class MainPresenter implements Presenter {
             }
         }
     };
+
 
     /**
      * MainPresenter constructor.
@@ -124,9 +126,8 @@ public class MainPresenter implements Presenter {
             Log.d(TAG, alarm.toString() +" insert alarm in Database");
         }
 
-        // Update adapter
         adapter.addItem(alarm);
-        //turnOnAlarmEvent(alarm,alarmDatabase.size()-1);
+        turnOnAlarmEvent(alarm,alarmDatabase.size()-1);
     }
 
     /**
@@ -135,37 +136,12 @@ public class MainPresenter implements Presenter {
      * @param position
      */
     public void turnOnAlarmEvent(Alarm alarm, int position){
-
         Intent intent = new Intent(context,AlarmService.class);
-        ContextCompat.startForegroundService(context,intent);
+        intent.putExtra(POSITION,position);
+        intent.putExtra(FLAG,true);
 
-//        // An intent is abstract description of an operation to be performed.
-//        Intent alarmIntent = new Intent(context, AlarmReceiver.class);
-//
-//        // This class provides access to the system alarm services.
-//        // These allow you to schedule your application to be run at some point in the future.
-//        AlarmManager alarmManager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
-//
-//        // getBroadcast : Retrieve a pendingintent that will perform a broadcast.
-//        // The returned object can be handed to other application so that they can perform the action you described on your behalf at a later time.
-//        PendingIntent pendingIntent = PendingIntent.getBroadcast(context,position,alarmIntent,0);
-//
-//        Calendar calendar = alarm.getCalendar();
-//        if (calendar.before(Calendar.getInstance())) {
-//            alarm.addOneDayCalendar();
-//            calendar = alarm.getCalendar();
-//        }
-//
-//        if (alarmManager != null) {
-//            // Scheduling a repeating alarm.
-//            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
-//                    AlarmManager.INTERVAL_DAY, pendingIntent);
-//
-//            // When We want to alarm system is in low-power idle, you should use setExactAndAllowWhileIdle method.
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
-//            }
-//        }
+        // startForegroundService() was introduced in O, just call startService for before O.
+        ContextCompat.startForegroundService(context,intent);
     }
 
     /**
@@ -173,50 +149,25 @@ public class MainPresenter implements Presenter {
      * @param position
      */
     public void turnOffAlarmEvent(int position){
-        Intent intent = new Intent(context, AlarmReceiver.class);
-        AlarmManager alarmManager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context,position,intent,0);
-        alarmManager.cancel(pendingIntent);
+        Intent intent = new Intent(context,AlarmService.class);
+        intent.putExtra(POSITION,position);
+        intent.putExtra(FLAG,false);
+
+        ContextCompat.startForegroundService(context,intent);
     }
 
     /**
      * Notify alarm event in database.
      */
     public void notifyAlarmEvent(){
+        for(int i=0;i<alarmDatabase.size();i++){
+            Alarm alarm = alarmDatabase.get(i);
 
-        // An intent is abstract description of an operation to be performed.
-        Intent alarmIntent = new Intent(context, AlarmReceiver.class);
-
-        // This class provides access to the system alarm services.
-        // These allow you to schedule your application to be run at some point in the future.
-        AlarmManager alarmManager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
-
-        for(int i = 0;i<alarmDatabase.selectDatabase().size();i++){
-
-            // getBroadcast : Retrieve a pendingintent that will perform a broadcast.
-            // The returned object can be handed to other application so that they can perform the action you described on your behalf at a later time.
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(context,i,alarmIntent,0);
-
-            Alarm alarm = alarmDatabase.selectDatabase().get(i);
-
-            // Register an alarm event when switch on
             if(alarm.getFlag()) {
-                Calendar calendar = alarm.getCalendar();
-                if (calendar.before(Calendar.getInstance())) {
-                    alarm.addOneDayCalendar();
-                    calendar = alarm.getCalendar();
-                }
-
-                if (alarmManager != null) {
-                    // Scheduling a repeating alarm.
-                    alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
-                            AlarmManager.INTERVAL_DAY, pendingIntent);
-
-                    // When We want to alarm system is in low-power idle, you should use setExactAndAllowWhileIdle method.
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
-                    }
-                }
+                Intent intent = new Intent(context, AlarmService.class);
+                intent.putExtra(POSITION,i);
+                intent.putExtra(FLAG,true);
+                ContextCompat.startForegroundService(context,intent);
             }
         }
     }

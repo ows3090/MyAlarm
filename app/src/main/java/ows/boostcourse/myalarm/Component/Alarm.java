@@ -59,21 +59,45 @@ public class Alarm{
         updateInfo();
     }
 
+    /**
+     * Get calendar.
+     * @return
+     */
     public Calendar getCalendar() { return calendar; }
 
+    /**
+     * Get meridiem.
+     * @return
+     */
     public String getMeridiem() {
         return meridiem;
     }
 
+    /**
+     * Get hourofday.
+     * @return
+     */
     public int getHourOfday() {
         return hourOfday;
     }
 
+    /**
+     * Get minute.
+     * @return
+     */
     public int getMinute() {
         return minute;
     }
 
+    /**
+     * Get flag.
+     * @return
+     */
     public boolean getFlag() { return flag; }
 
+    /**
+     * Set flag
+     * @param flag
+     */
     public void setFlag(boolean flag) { this.flag = flag; }
 }

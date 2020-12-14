@@ -15,6 +15,10 @@ import androidx.core.app.NotificationManagerCompat;
 
 import ows.boostcourse.myalarm.R;
 
+/**
+ * This is AlarmReceiver that inherits BroadcastReceiver.
+ * These broadcasts are sent when an alarm event occures.
+ */
 public class AlarmReceiver extends BroadcastReceiver {
 
     private static final String TAG = AlarmReceiver.class.getSimpleName();
@@ -65,6 +69,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         createNotificationChannel(context,builder);
     }
+
 
     /**
      * This method is creating notification channel.
