@@ -30,22 +30,32 @@ public class AlarmService extends Service {
     private static final CharSequence CHANNEL_NAME = "Alarm_Name";
     private static ArrayList<Integer> serviceNum;
 
+    /**
+     * Be called this method when service create.
+     */
     @Override
     public void onCreate() {
-        Log.d(TAG,"AlarmService onCreate");
+        Log.d(TAG,"onCreate");
         super.onCreate();
         serviceNum = new ArrayList<Integer>();
     }
 
+    /**
+     * If there is service , this method is called when startForegroundservice is called.
+     * @param intent
+     * @param flags
+     * @param startId
+     * @return
+     */
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.d(TAG,"onStartCommand");
         int position = intent.getIntExtra(POSITION,0);
         if (intent.getBooleanExtra(FLAG, false)) {
             if(!serviceNum.contains(position)){
                 serviceNum.add(position);
                 settingOnAlarmEvent(position);
             }
-
         } else {
             serviceNum.remove(Integer.valueOf(position));
             settingOffAlarmEvent(intent.getIntExtra(POSITION, 0));
@@ -53,9 +63,12 @@ public class AlarmService extends Service {
         return START_NOT_STICKY;
     }
 
+    /**
+     * Be called when service destroy.
+     */
     @Override
     public void onDestroy() {
-        Log.d(TAG,"AlarmService onDestroy");
+        Log.d(TAG,"onDestroy");
         super.onDestroy();
     }
 
@@ -70,16 +83,17 @@ public class AlarmService extends Service {
      * @param position
      */
     public void settingOnAlarmEvent(int position) {
+        Log.d(TAG,"settinOnAlarmEvent");
         createNotificationChannel();
 
-        // startForeground 실행
         Notification noti = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(android.R.drawable.ic_dialog_alert)
                 .build();
         startForeground(1234, noti);
 
         // An intent is abstract description of an operation to be performed.
-        Intent alarmIntent = new Intent(this, AlarmReceiver.class);
+        Intent notifyIntent = new Intent(this, NotifyActivity.class);
+        notifyIntent.putExtra(POSITION,position);
 
         // This class provides access to the system alarm services.
         // These allow you to schedule your application to be run at some point in the future.
@@ -87,7 +101,7 @@ public class AlarmService extends Service {
 
         // getBroadcast : Retrieve a pendingintent that will perform a broadcast.
         // The returned object can be handed to other application so that they can perform the action you described on your behalf at a later time.
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, position, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, position, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         Alarm alarm = AlarmDatabase.getInstance(this).get(position);
 
         Calendar calendar = alarm.getCalendar();
@@ -112,9 +126,10 @@ public class AlarmService extends Service {
      * @param position
      */
     public void settingOffAlarmEvent(int position) {
-        Intent intent = new Intent(this, AlarmReceiver.class);
+        Log.d(TAG,"settingOffAlarmEvent");
+        Intent intent = new Intent(this, NotifyActivity.class);
         AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this,position,intent,0);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this,position,intent,0);
         alarmManager.cancel(pendingIntent);
 
         if(serviceNum.size() == 0){
@@ -132,7 +147,7 @@ public class AlarmService extends Service {
             NotificationChannel serviceChannel = new NotificationChannel(
                     CHANNEL_ID,
                     CHANNEL_NAME,
-                    NotificationManager.IMPORTANCE_NONE
+                    NotificationManager.IMPORTANCE_DEFAULT
             );
             serviceChannel.setShowBadge(false);
             manager.createNotificationChannel(serviceChannel);

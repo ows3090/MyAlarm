@@ -2,7 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ows.boostcourse.myalarm">
 
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
@@ -13,20 +12,26 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity
+            android:name=".Component.NotifyActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+        </activity>
+
         <service
-            android:name=".Component.AlarmService"
-            android:enabled="true"
-            android:exported="true"></service>
+            android:name=".Component.AlarmService"/>
 
         <receiver
             android:name=".Component.BootReceiver"
-            android:enabled="false">
+            android:enabled="true"
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
 
-        <activity android:name=".Component.MainActivity">
+        <activity
+            android:name=".Component.MainActivity"
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -34,7 +39,6 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name=".Component.AlarmReceiver" />
     </application>
 
 </manifest>

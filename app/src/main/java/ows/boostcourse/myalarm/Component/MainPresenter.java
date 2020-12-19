@@ -66,14 +66,13 @@ public class MainPresenter implements Presenter {
      * @param view view that mapped to presenter.
      */
     private MainPresenter(Context context, MainView view) {
+        Log.d(TAG,"Construtor");
         this.context = context;
         this.view = view;
         alarmDatabase = AlarmDatabase.getInstance(context);
         adapter = new AlarmAdapter(switchListener);
 
-        /**
-         * Update adapter by shardpreferences that have setting alarm information.
-         */
+        // Update adapter by shardpreferences that have setting alarm information.
         for(int i = 0; i< alarmDatabase.size(); i++){
             adapter.addItem(alarmDatabase.get(i));
             Log.d(TAG, alarmDatabase.get(i).toString());
@@ -87,6 +86,7 @@ public class MainPresenter implements Presenter {
      * @return
      */
     public static synchronized MainPresenter getInstance(Context context, MainView view){
+        Log.d(TAG,"getInstance");
         if(instance == null){
             instance = new MainPresenter(context,view);
         }
@@ -98,6 +98,7 @@ public class MainPresenter implements Presenter {
      */
     @Override
     public void onCreate() {
+        Log.d(TAG,"onCreate");
         view.onInitView(adapter);
         notifyAlarmEvent();
     }
@@ -107,6 +108,7 @@ public class MainPresenter implements Presenter {
      */
     @Override
     public void onDestory() {
+        Log.d(TAG,"onDestroy");
         instance = null;
     }
 
@@ -171,7 +173,5 @@ public class MainPresenter implements Presenter {
             }
         }
     }
-
-
 
 }
