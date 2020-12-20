@@ -2,7 +2,6 @@
 
 
 MyAlarm is a simple alarm app. This app works because it uses foregroudnservice even if  I exit the app.
-
 Also When you boot or reboot your phone, broadcastReceiver broadcasts and starts alarm service.
 
 <br>
@@ -12,9 +11,7 @@ Also When you boot or reboot your phone, broadcastReceiver broadcasts and starts
 ![Untitled Diagram (8)](https://user-images.githubusercontent.com/34837583/102713168-77496f00-4309-11eb-8cff-52625eec559a.png)
 
 This app is implemented based on the MVP architecture.
-
 The MVP architecture can solve the problem that the controller depends on the Android API. This makes unit tesing easier.
-
 But like the MVC architecture, when you change the view, you have to go back to the controller or presenter and change it. Also over time, the code of the controller or presenter gets longer, which may cause problems.
 
 <br>
