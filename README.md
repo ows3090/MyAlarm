@@ -30,8 +30,6 @@ But like the MVC architecture, when you change the view, you have to go back to 
 
 ### Using AlarmManager
 
-'''
-
 ```java
 // An intent is abstract description of an operation to be performed.
 Intent notifyIntent = new Intent(this, NotifyActivity.class);
@@ -63,13 +61,9 @@ if (alarmManager != null) {
 }
 ```
 
-'''
-
 <br>
 
 ### Using foregroundservice
-
-'''
 
 ```java
 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -89,8 +83,6 @@ Notification noti = new NotificationCompat.Builder(this, CHANNEL_ID)
         .build();
 startForeground(1234, noti);
 ```
-
-'''
 
 <br>
 
