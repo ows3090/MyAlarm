@@ -1,12 +1,11 @@
 ## MyAlarm
 
----
 
 MyAlarm is a simple alarm app. This app works because it uses foregroudnservice even if  I exit the app.
 
 Also When you boot or reboot your phone, broadcastReceiver broadcasts and starts alarm service.
 
-
+<br>
 
 ### Architecture
 
@@ -18,19 +17,19 @@ The MVP architecture can solve the problem that the controller depends on the An
 
 But like the MVC architecture, when you change the view, you have to go back to the controller or presenter and change it. Also over time, the code of the controller or presenter gets longer, which may cause problems.
 
-
+<br>
 
 ### Component Design
 
 ![image](https://user-images.githubusercontent.com/34837583/102713399-5f72ea80-430b-11eb-8f2c-421e8789a54a.png)
 
-MainPresenter : Mainpresenter applied singleton design pattern. Mainpresenter is responsible for executing the alarmservice.
+''MainPresenter'' : Mainpresenter applied singleton design pattern. Mainpresenter is responsible for executing the alarmservice.
 
-AlarmDatabae : AlarmDatabase is database that have setting alarm information. This is used SharedPreference and applied singleton design pattern.
+''AlarmDatabae'' : AlarmDatabase is database that have setting alarm information. This is used SharedPreference and applied singleton design pattern.
 
-BootReceiver : This is BroadcastReceiver that is executed when application boot up or reboot.
+''BootReceiver'' : This is BroadcastReceiver that is executed when application boot up or reboot.
 
-
+<br>
 
 ### End
 
