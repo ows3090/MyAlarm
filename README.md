@@ -28,6 +28,72 @@ But like the MVC architecture, when you change the view, you have to go back to 
 
 <br>
 
+### Using AlarmManager
+
+'''
+
+```java
+// An intent is abstract description of an operation to be performed.
+Intent notifyIntent = new Intent(this, NotifyActivity.class);
+notifyIntent.putExtra(POSITION,position);
+
+// This class provides access to the system alarm services.
+// These allow you to schedule your application to be run at some point in the future.
+AlarmManager alarmManager = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+
+// getBroadcast : Retrieve a pendingintent that will perform a broadcast.
+// The returned object can be handed to other application so that they can perform the action you described on your behalf at a later time.
+PendingIntent pendingIntent = PendingIntent.getActivity(this, position, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+Alarm alarm = AlarmDatabase.getInstance(this).get(position);
+
+Calendar calendar = alarm.getCalendar();
+if (calendar.before(Calendar.getInstance())) {
+    alarm.addOneDayCalendar();
+    calendar = alarm.getCalendar();
+}
+
+if (alarmManager != null) {
+    // Schedule a repeating alarm.
+    alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,calendar.getTimeInMillis(),AlarmManager.INTERVAL_DAY,pendingIntent);
+
+    if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
+        // When We want to alarm system is in low-power idle, you should use setExactAndAllowWhileIdle method.
+        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP,calendar.getTimeInMillis(),pendingIntent);
+    }
+}
+```
+
+'''
+
+<br>
+
+### Using foregroundservice
+
+'''
+
+```java
+if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+    NotificationManager manager = getBaseContext().getSystemService(NotificationManager.class);
+
+    NotificationChannel serviceChannel = new NotificationChannel(
+            CHANNEL_ID,
+            CHANNEL_NAME,
+            NotificationManager.IMPORTANCE_DEFAULT
+    );
+    serviceChannel.setShowBadge(false);
+    manager.createNotificationChannel(serviceChannel);
+}
+
+Notification noti = new NotificationCompat.Builder(this, CHANNEL_ID)
+        .setSmallIcon(android.R.drawable.ic_dialog_alert)
+        .build();
+startForeground(1234, noti);
+```
+
+'''
+
+<br>
+
 ### End
 
 I'm still junior developer. I'm going to grow into an Android developer.  Thanks very much a drip if you would give the advice you gave me an efficient development. ( ex) pull request ..)
